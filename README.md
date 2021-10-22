@@ -2,7 +2,7 @@
 
 Allows you to launch and connect with multiple instances of Diablo 2 Resurrected using pre-generated login tokens.
 
-Requires handle64.exe from https://docs.microsoft.com/en-us/sysinternals/downloads/handle (included)
+Requires handle64.exe from https://docs.microsoft.com/en-us/sysinternals/downloads/handle (included with the compiled exe)
 
 ### BTC Donations: 3FLeQd9zt7H6zqG839apK5MxkVJvfNYxer
 

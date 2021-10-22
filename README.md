@@ -33,7 +33,7 @@ Requires handle64.exe from https://docs.microsoft.com/en-us/sysinternals/downloa
 
 ## Changelog
 * 0.0.1 - Initial Commit
-* 0.0.2 - Added field to specify cmdline arguments when launching D2R.exe
+* 0.0.2 - Added field to specify cmdline arguments when launching D2R.exe  
    Increased verbosity of tooltip messages when creating a token  
    Spacebar is only pressed for the first 15 seconds after game launch (so it doesn't continue to spam while waiting in queue)  
    Attempt to close pre-existing Bnet windows before creating a token

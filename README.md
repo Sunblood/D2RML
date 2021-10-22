@@ -35,5 +35,11 @@ Requires handle64.exe from https://docs.microsoft.com/en-us/sysinternals/downloa
    Increased verbosity of tooltip messages when creating a token  
    Spacebar is only pressed for the first 15 seconds after game launch (so it doesn't continue to spam while waiting in queue)  
    Attempt to close pre-existing Bnet windows before creating a token
+   
+## Virus warnings
+"My antivirus flagged this as a virus! Are you trying to steal my account!?"  
+No. Autoit executables are often flagged as malicious or trojans due to a long history of abuse. Feel free to download Autoit and compile it yourself from source. Here's the Virustotal report from version 0.0.2, as you can see it gets flagged for multiple things.
+
+![2021-10-22 11_08_16-VirusTotal - File - 00238f91343f8191c977980e5a17a55391cfe690f8cf8979948c4263423a](https://user-images.githubusercontent.com/6067956/138488135-dcb08250-b4ec-4163-8b09-27cccc2ff651.png)
 
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FSunblood%2FD2RML&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)

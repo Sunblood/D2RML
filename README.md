@@ -28,3 +28,5 @@ Requires handle64.exe from https://docs.microsoft.com/en-us/sysinternals/downloa
 * If you try to connect using an invalid token, the server connection will fail and you'll get kicked to single-player.
 * To fix this, check the box for the invalid token and click the "Refresh Token" button. You'll have to go through the login process again to save a new token.
 * **ALWAYS USE D2RML TO LAUNCH THE GAME**
+
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FSunblood%2FD2RML&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)

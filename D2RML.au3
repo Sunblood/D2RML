@@ -11,27 +11,38 @@
 #include <AutoitConstants.au3>
 #include <Array.au3>
 #include <ButtonConstants.au3>
+#include <EditConstants.au3>
 #include <GUIConstantsEx.au3>
-#include <ListViewConstants.au3>
-#include <WindowsConstants.au3>
 #include <GuiListView.au3>
+#include <ListViewConstants.au3>
+#include <StaticConstants.au3>
+#include <WindowsConstants.au3>
 
 FileInstall("handle64.exe", "handle64.exe", 1)
+If not FileExists("handle64.exe") Then
+	MsgBox(262144+16,"Error","Error: Unable to locate handle64.exe. Download it from Github and place it in the same folder as D2RML.")
+	Exit
+EndIf
 
-#Region ### START Koda GUI section
-$guiMain = GUICreate("D2RML", 365, 232, -1, -1)
+#Region ### START Koda GUI section ### Form=C:\Jack\Programs\D2\Multilaunch\guiMain.kxf
+$guiMain = GUICreate("D2RML", 365, 259, -1, -1)
 GUISetBkColor(0xC0DCC0)
 $buttonAdd = GUICtrlCreateButton("Add Token", 8, 40, 75, 25)
-$listViewMain = GUICtrlCreateListView("Account|Token Date", 8, 72, 250, 150, BitOR($LVS_REPORT, $LVS_SINGLESEL, $WS_VSCROLL), BitOR($WS_EX_CLIENTEDGE, $LVS_EX_CHECKBOXES, $LVS_EX_FULLROWSELECT))
+$listViewMain = GUICtrlCreateListView("Account|Token Date", 8, 72, 250, 150, BitOR($LVS_REPORT,$LVS_SINGLESEL,$WS_VSCROLL), BitOR($WS_EX_CLIENTEDGE,$LVS_EX_CHECKBOXES,$LVS_EX_FULLROWSELECT))
+GUICtrlSendMsg(-1, $LVM_SETCOLUMNWIDTH, 0, 50)
+GUICtrlSendMsg(-1, $LVM_SETCOLUMNWIDTH, 1, 50)
 $buttonLaunch = GUICtrlCreateButton("Launch Selected", 264, 72, 91, 25)
 $buttonRefresh = GUICtrlCreateButton("Refresh Token", 264, 104, 91, 25)
 $buttonRemove = GUICtrlCreateButton("Remove Token", 264, 136, 91, 25)
-$labelHelp = GUICtrlCreateLabel("How does this work?", 256, 19, 103, 17)
+$labelHelp = GUICtrlCreateLabel("How does this work?", 256, 18, 103, 17)
 GUICtrlSetFont(-1, 8, 400, 4, "MS Sans Serif")
 GUICtrlSetColor(-1, 0x0000FF)
-GUICtrlSetCursor(-1, 0)
+GUICtrlSetCursor (-1, 0)
 GUICtrlCreateLabel("Sun's D2R Multilauncher", 8, 8, 236, 31)
 GUICtrlSetFont(-1, 15, 400, 0, "@Microsoft YaHei UI")
+$checkboxArgs = GUICtrlCreateCheckbox("Game cmdline:", 8, 232, 89, 17)
+$inputArgs = GUICtrlCreateInput("", 97, 230, 160, 21)
+;~ GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
 
 Global Const $accountRegKey[] = ["HKEY_CURRENT_USER\SOFTWARE\Blizzard Entertainment\Battle.net\Launch Options\OSI", "WEB_TOKEN"]
@@ -39,7 +50,7 @@ Global Const $gameInstallRegKey[] = ["HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Mi
 Global Const $gameClass = "[CLASS:OsWindow]"
 Global Const $bnetLauncherClass = "[CLASS:Qt5QWindowIcon]"
 Global Const $bnetClientClass = "[CLASS:Chrome_WidgetWin_0]"
-Global Const $version = "0.0.1"
+Global Const $version = "0.0.2"
 
 WinSetTitle($guiMain, "", "D2RML v" & $version)
 LoadAccounts()
@@ -71,8 +82,8 @@ While 1
 				EndIf
 			Next
 		Case $buttonRemove
-			$count = _GUICtrlListView_GetItemCount($listViewMain)
 			If MsgBox(262144+36, "Remove account", "Are you sure you want to remove the checked account(s)?") = 6 Then
+				$count = _GUICtrlListView_GetItemCount($listViewMain)
 				For $i = 0 To $count
 					If _GUICtrlListView_GetItemChecked($listViewMain, $i) Then
 						$name = _GUICtrlListView_GetItemText($listViewMain, $i, 0)
@@ -105,11 +116,15 @@ Func Setup($name = "")
 		If $name = "" Then Return
 	EndIf
 
-	ToolTip("Creating Tokens: " & $name & @CRLF & "Log into the Launcher with the desired account", 0, 0)
+	WinClose($bnetClientClass)
+	WinClose($bnetLauncherClass)
+
+	ToolTip("Creating Tokens: " & $name & @CRLF & "Log into the Launcher with the desired account"&@CRLF&"Waiting for first launcher to open", 0, 0)
 	LaunchLauncher()
 	WinWait($bnetLauncherClass)
+	ToolTip("Creating Tokens: " & $name & @CRLF & "Log into the Launcher with the desired account"&@CRLF&"Waiting for first launcher to close"&@CRLF&"Window title: "&WinGetTitle($bnetLauncherClass), 0, 0)
 	WinWaitClose($bnetLauncherClass)
-	ToolTip("Creating Tokens: " & $name & @CRLF & "Press 'Play' and connect to B.Net", 0, 0)
+	ToolTip("Creating Tokens: " & $name & @CRLF & "Press 'Play' and connect to B.Net"&@CRLF&"Waiting for game to open", 0, 0)
 
 	ProcessWait("D2R.exe")
 	ToolTip("Creating Tokens: " & $name & @CRLF & "Generating token 1 of 2...", 0, 0)
@@ -208,9 +223,10 @@ EndFunc   ;==>WriteRegKey
 Func WaitForNewKey()
 	$curKey = RegRead($accountRegKey[0], $accountRegKey[1])
 	$sendTimer = TimerInit()
+	$queueTimer = TimerInit()
 	Do
 		$newKey = RegRead($accountRegKey[0], $accountRegKey[1])
-		If TimerDiff($sendTimer) > 500 Then
+		If TimerDiff($sendTimer) > 500 and TimerDiff($queueTimer) < 15000 Then
 			ControlSend($gameClass, "", "", "{SPACE}")
 			$sendTimer = TimerInit()
 		EndIf
@@ -220,7 +236,11 @@ EndFunc   ;==>WaitForNewKey
 
 Func LaunchGame()
 	$path = RegRead($gameInstallRegKey[0], $gameInstallRegKey[1])
-	Return ShellExecute($path & "\D2R.exe")
+	If GUICtrlRead($checkboxArgs) = $GUI_CHECKED Then
+		Return ShellExecute($path & "\D2R.exe",GUICtrlRead($inputArgs))
+	Else
+		Return ShellExecute($path & "\D2R.exe")
+	EndIf
 EndFunc   ;==>LaunchGame
 Func LaunchLauncher() ;hehe
 	$path = RegRead($gameInstallRegKey[0], $gameInstallRegKey[1])

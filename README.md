@@ -29,4 +29,11 @@ Requires handle64.exe from https://docs.microsoft.com/en-us/sysinternals/downloa
 * To fix this, check the box for the invalid token and click the "Refresh Token" button. You'll have to go through the login process again to save a new token.
 * **ALWAYS USE D2RML TO LAUNCH THE GAME**
 
+## Changelog
+* 0.0.1 - Initial Commit
+* 0.0.2 - Added field to specify cmdline arguments when launching D2R.exe
+*   Increased verbosity of tooltip messages when creating a token
+*   Spacebar is only pressed for the first 15 seconds after game launch (so it doesn't continue to spam while waiting in queue)
+*   Attempt to close pre-existing Bnet windows before creating a token
+
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FSunblood%2FD2RML&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)

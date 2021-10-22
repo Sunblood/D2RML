@@ -18,13 +18,11 @@
 
 FileInstall("handle64.exe", "handle64.exe", 1)
 
-#Region ### START Koda GUI section ### Form=C:\Jack\Programs\D2\Multilaunch\guiMain.kxf
+#Region ### START Koda GUI section
 $guiMain = GUICreate("D2RML", 365, 232, -1, -1)
 GUISetBkColor(0xC0DCC0)
 $buttonAdd = GUICtrlCreateButton("Add Token", 8, 40, 75, 25)
 $listViewMain = GUICtrlCreateListView("Account|Token Date", 8, 72, 250, 150, BitOR($LVS_REPORT, $LVS_SINGLESEL, $WS_VSCROLL), BitOR($WS_EX_CLIENTEDGE, $LVS_EX_CHECKBOXES, $LVS_EX_FULLROWSELECT))
-;~ GUICtrlSendMsg(-1, $LVM_SETCOLUMNWIDTH, 0, 50)
-;~ GUICtrlSendMsg(-1, $LVM_SETCOLUMNWIDTH, 1, 50)
 $buttonLaunch = GUICtrlCreateButton("Launch Selected", 264, 72, 91, 25)
 $buttonRefresh = GUICtrlCreateButton("Refresh Token", 264, 104, 91, 25)
 $buttonRemove = GUICtrlCreateButton("Remove Token", 264, 136, 91, 25)
@@ -34,7 +32,6 @@ GUICtrlSetColor(-1, 0x0000FF)
 GUICtrlSetCursor(-1, 0)
 GUICtrlCreateLabel("Sun's D2R Multilauncher", 8, 8, 236, 31)
 GUICtrlSetFont(-1, 15, 400, 0, "@Microsoft YaHei UI")
-;~ GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
 
 Global Const $accountRegKey[] = ["HKEY_CURRENT_USER\SOFTWARE\Blizzard Entertainment\Battle.net\Launch Options\OSI", "WEB_TOKEN"]

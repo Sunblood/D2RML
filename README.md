@@ -4,6 +4,8 @@ Allows you to launch and connect with multiple instances of Diablo 2 Resurrected
 
 Requires handle64.exe from https://docs.microsoft.com/en-us/sysinternals/downloads/handle (included)
 
+### BTC Donations: 3FLeQd9zt7H6zqG839apK5MxkVJvfNYxer
+
 ![2021-10-21 21_24_16-Window](https://user-images.githubusercontent.com/6067956/138388188-6e7b3dec-b07a-4036-99a5-b180348a4b75.png)
 
 ## Setup

@@ -32,11 +32,21 @@ Requires handle64.exe from https://docs.microsoft.com/en-us/sysinternals/downloa
 * **ALWAYS USE D2RML TO LAUNCH THE GAME**
 
 ## Changelog
-* 0.0.1 - Initial Commit
-* 0.0.2 - Added field to specify cmdline arguments when launching D2R.exe  
-   Increased verbosity of tooltip messages when creating a token  
-   Spacebar is only pressed for the first 15 seconds after game launch (so it doesn't continue to spam while waiting in queue)  
-   Attempt to close pre-existing Bnet windows before creating a token
+* 0.0.1
+-   Initial Commit
+* 0.0.2
+-   Added field to specify cmdline arguments when launching D2R.exe  
+-   Increased verbosity of tooltip messages when creating a token  
+-   Spacebar is only pressed for the first 15 seconds after game launch (so it doesn't continue to spam while waiting in queue)  
+-   Attempt to close pre-existing Bnet windows before creating a token
+* 0.0.3
+-   Added option to toggle Skip Intro
+-   Added option to rename D2R window to match token name
+-   Settings now save to D2RML.ini
+-   Handle64.exe is pre-run at launch
+-   Launch Bnet app directly instead of via D2R's launcher
+-   GUI now remains responsive while waiting on tokens
+-   Additional back-end work for upcoming features
    
 ## Virus warnings
 "My antivirus flagged this as a virus! Are you trying to steal my account!?"  

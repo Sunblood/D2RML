@@ -47,6 +47,9 @@ Requires handle64.exe from https://docs.microsoft.com/en-us/sysinternals/downloa
   -   Launch Bnet app directly instead of via D2R's launcher
   -   GUI now remains responsive while waiting on tokens
   -   Additional back-end work for upcoming features
+ * 0.0.4
+  - Added version check / update notification
+  - Fixed error when trying to find the D2R window title when it is not running
    
 ## Virus warnings
 "My antivirus flagged this as a virus! Are you trying to steal my account!?"  

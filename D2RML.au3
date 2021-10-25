@@ -28,9 +28,11 @@ If Not FileExists("handle64.exe") Then
 	MsgBox(262144 + 16, "Error", "Error: Unable to locate handle64.exe. Download it from Github and place it in the same folder as D2RML.")
 	Exit
 EndIf
-SplashTextOn("D2RML", "Preloading handle64. Please wait.", 300, 100, Default, Default, 32)
-ShellExecuteWait("handle64.exe", "", "", "", @SW_HIDE)
-SplashOff()
+If @Compiled Then
+	SplashTextOn("D2RML", "Preloading handle64. Please wait.", 300, 100, Default, Default, 32)
+	ShellExecuteWait("handle64.exe", "", "", "", @SW_HIDE)
+	SplashOff()
+EndIf
 
 #Region ### START Koda GUI section ### Form=C:\Jack\Programs\D2\Multilaunch\guiMain.kxf
 $guiMain = GUICreate("D2RML", 365, 306, -1, -1)
@@ -53,7 +55,7 @@ $checkboxArgs = GUICtrlCreateCheckbox("Game cmdline:", 8, 232, 89, 17)
 $inputArgs = GUICtrlCreateInput("", 97, 230, 160, 21)
 $checkboxSkipIntro = GUICtrlCreateCheckbox("Skip intro videos", 8, 256, 97, 17)
 $checkboxChangeTitle = GUICtrlCreateCheckbox("Change game title to match token name", 8, 280, 209, 17)
-GUISetState(@SW_SHOW)
+;~ GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
 
 Global Const $accountRegKey[] = ["HKEY_CURRENT_USER\SOFTWARE\Blizzard Entertainment\Battle.net\Launch Options\OSI", "WEB_TOKEN"]
@@ -63,7 +65,7 @@ Global Const $gameClass = "[CLASS:OsWindow]"
 Global Const $bnetLauncherClass = "[CLASS:Qt5QWindowIcon]"
 Global Const $bnetClientClass = "[CLASS:Chrome_WidgetWin_0]"
 Global Const $settingsFile = "D2RML.ini"
-Global Const $version = "0.0.3"
+Global Const $version = "0.0.4"
 
 Global $tokenInProgress = 0
 
@@ -73,6 +75,8 @@ WinSetTitle($guiMain, "", "D2RML v" & $version)
 LoadSettings()
 LoadAccounts()
 GUISetState()
+
+CheckVersion()
 
 While 1
 	GuiMessages()
@@ -141,6 +145,22 @@ Func GuiMessages()
 					"Logging in through normal means will invalidate the saved token for the account and you will be unable to connect. Use the 'Refresh Token' button to redo the setup and generate a new token.")
 	EndSwitch
 EndFunc   ;==>GuiMessages
+
+Func CheckVersion()
+	$source = BinaryToString(InetRead("https://raw.githubusercontent.com/Sunblood/D2RML/main/D2RML.au3", 1))
+	$a = StringSplit($source,@CRLF)
+	For $i = 1 to $a[0]
+		If StringLeft($a[$i],21) = "Global Const $version" Then
+			$b = StringSplit($a[$i],'"')
+			$v = $b[2]
+			If $v > $version Then
+				If MsgBox(36,"Update","A new version of D2RML is available: "&$v&@CRLF&"Open download page?") = 6 Then
+					ShellExecute("https://github.com/Sunblood/D2RML")
+				EndIf
+			EndIf
+		EndIf
+	Next
+EndFunc
 
 Func Setup($name = "")
 	If ProcessExists("D2R.exe") Or ProcessExists("Battle.net.exe") Or ProcessExists("Diablo II Resurrected Launcher.exe") Then
@@ -303,9 +323,12 @@ Func LaunchLauncher() ;hehe
 EndFunc   ;==>LaunchLauncher
 Func GetGameWindowHandle($pid)
 	$p = _ProcessGetWindow($pid)
-	If $p[0] = 3 Then
-		Return $p[1]
+	If IsArray($p) Then
+		If $p[0] = 3 Then
+			Return $p[1]
+		EndIf
 	EndIf
+	Return 0
 EndFunc   ;==>GetGameWindowHandle
 
 Func SaveSettings()

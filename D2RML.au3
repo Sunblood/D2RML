@@ -358,7 +358,7 @@ Func LaunchGame()
 		Return ShellExecute($path&"\D2R.exe",GUICtrlRead($inputArgs))
 ;~ 		Return _RunWithReducedPrivileges($path&"\D2R.exe",GUICtrlRead($inputArgs),$path)
 	Else
-		Return _RunWithReducedPrivileges($path&"\D2R.exe",$path)
+		Return ShellExecute($path&"\D2R.exe")
 	EndIf
 EndFunc   ;==>LaunchGame
 Func LaunchLauncher() ;hehe

@@ -50,6 +50,11 @@ Requires handle64.exe from https://docs.microsoft.com/en-us/sysinternals/downloa
 * 0.0.4
   -   Added version check / update notification
   -   Fixed error when trying to find the D2R window title when it is not running
+* 0.0.5
+  -   Added cmdline support ('d2rml.exe tokenname1 tokenname2 <...>')
+  -   Added statusbar (used instead of tooltips)
+  -   Added minimize-to-tray option
+  -   Handle64 pre-launch now shows the cmd window so you can see if it stalls
    
 ## Virus warnings
 "My antivirus flagged this as a virus! Are you trying to steal my account!?"  

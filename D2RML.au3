@@ -1,6 +1,7 @@
 #RequireAdmin
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Version=Beta
+#AutoIt3Wrapper_Icon=d2rml.ico
 #AutoIt3Wrapper_Run_Au3Stripper=y
 #Au3Stripper_Parameters=/mo
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
@@ -19,9 +20,16 @@
 #include <EditConstants.au3>
 #include <GUIConstantsEx.au3>
 #include <GuiListView.au3>
+#include <GuiStatusBar.au3>
 #include <ListViewConstants.au3>
 #include <StaticConstants.au3>
+#include <TrayConstants.au3>
 #include <WindowsConstants.au3>
+#include <WinAPI.au3>
+#include <WinAPITheme.au3>
+#include <Misc.au3>
+
+_Singleton("D2RML")
 
 FileInstall("handle64.exe", "handle64.exe", 0)
 If Not FileExists("handle64.exe") Then
@@ -30,12 +38,12 @@ If Not FileExists("handle64.exe") Then
 EndIf
 If @Compiled Then
 	SplashTextOn("D2RML", "Preloading handle64. Please wait.", 300, 100, Default, Default, 32)
-	ShellExecuteWait("handle64.exe", "", "", "", @SW_HIDE)
+	ShellExecuteWait("handle64.exe")
 	SplashOff()
 EndIf
 
 #Region ### START Koda GUI section ### Form=C:\Jack\Programs\D2\Multilaunch\guiMain.kxf
-$guiMain = GUICreate("D2RML", 365, 306, -1, -1)
+$guiMain = GUICreate("D2RML", 363, 346, -1, -1)
 GUISetBkColor(0xC0DCC0)
 $buttonAdd = GUICtrlCreateButton("Add Token", 8, 40, 75, 25)
 $listViewMain = GUICtrlCreateListView("Account|Token Date|Region", 8, 72, 250, 150, BitOR($LVS_REPORT,$LVS_SINGLESEL,$WS_VSCROLL), BitOR($WS_EX_CLIENTEDGE,$LVS_EX_CHECKBOXES,$LVS_EX_FULLROWSELECT))
@@ -55,8 +63,19 @@ $checkboxArgs = GUICtrlCreateCheckbox("Game cmdline:", 8, 232, 89, 17)
 $inputArgs = GUICtrlCreateInput("", 97, 230, 160, 21)
 $checkboxSkipIntro = GUICtrlCreateCheckbox("Skip intro videos", 8, 256, 97, 17)
 $checkboxChangeTitle = GUICtrlCreateCheckbox("Change game title to match token name", 8, 280, 209, 17)
+$checkboxMinimizeToTray = GUICtrlCreateCheckbox("Minimize to tray", 8, 304, 97, 17)
+$StatusBar1 = _GUICtrlStatusBar_Create($guiMain)
 ;~ GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
+
+_WinAPI_SetWindowTheme($StatusBar1, "", "")
+_GUICtrlStatusBar_SetBkColor($StatusBar1,0x9AB09A)
+
+GUISetIcon("d2rml.ico")
+
+Opt("TrayAutoPause",0)
+Opt("TrayMenuMode",1)
+TraySetIcon("d2rml.ico")
 
 Global Const $accountRegKey[] = ["HKEY_CURRENT_USER\SOFTWARE\Blizzard Entertainment\Battle.net\Launch Options\OSI", "WEB_TOKEN"]
 Global Const $gameInstallRegKey[] = ["HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Diablo II Resurrected", "InstallLocation"]
@@ -65,11 +84,7 @@ Global Const $gameClass = "[CLASS:OsWindow]"
 Global Const $bnetLauncherClass = "[CLASS:Qt5QWindowIcon]"
 Global Const $bnetClientClass = "[CLASS:Chrome_WidgetWin_0]"
 Global Const $settingsFile = "D2RML.ini"
-Global Const $version = "0.0.4"
-
-Global $tokenInProgress = 0
-
-OnAutoItExitRegister("SaveSettings")
+Global Const $version = "0.0.5"
 
 WinSetTitle($guiMain, "", "D2RML v" & $version)
 LoadSettings()
@@ -78,28 +93,23 @@ GUISetState()
 
 CheckVersion()
 
+If UBound($cmdline) > 1 Then
+	For $i = 1 to $cmdline[0]
+		LaunchWithAccount($cmdline[$i])
+	Next
+EndIf
+
 While 1
 	GuiMessages()
 
 WEnd
 
-Func DisableButtons()
-	GUICtrlSetState($buttonAdd,$GUI_DISABLE)
-	GUICtrlSetState($buttonLaunch,$GUI_DISABLE)
-	GUICtrlSetState($buttonRefresh,$GUI_DISABLE)
-	GUICtrlSetState($buttonRemove,$GUI_DISABLE)
-EndFunc
-Func EnableButtons()
-	GUICtrlSetState($buttonAdd,$GUI_ENABLE)
-	GUICtrlSetState($buttonLaunch,$GUI_ENABLE)
-	GUICtrlSetState($buttonRefresh,$GUI_ENABLE)
-	GUICtrlSetState($buttonRemove,$GUI_ENABLE)
-EndFunc
-
 Func GuiMessages()
 	$nMsg = GUIGetMsg()
 	Switch $nMsg
 		Case $GUI_EVENT_CLOSE
+			SaveSettings()
+			GUIDelete($guiMain)
 			Exit
 		Case $buttonAdd
 			Setup()
@@ -143,8 +153,31 @@ Func GuiMessages()
 					"Initial setup requires that you log into an account at least once in order to save the token. " & _
 					"Login tokens are only valid once, after which they expire and a new token is generated. D2RML does this automatically as long as you *always* use this app to launch the game." & @CRLF & _
 					"Logging in through normal means will invalidate the saved token for the account and you will be unable to connect. Use the 'Refresh Token' button to redo the setup and generate a new token.")
+		Case $GUI_EVENT_MINIMIZE
+			If GUICtrlRead($checkboxMinimizeToTray) = $GUI_CHECKED Then
+				GUISetState(@SW_HIDE)
+			EndIf
+	EndSwitch
+
+	Switch TrayGetMsg()
+		Case $TRAY_EVENT_PRIMARYDOWN
+			GUISetState(@SW_SHOW)
+			WinActivate($guiMain)
 	EndSwitch
 EndFunc   ;==>GuiMessages
+
+Func DisableButtons()
+	GUICtrlSetState($buttonAdd,$GUI_DISABLE)
+	GUICtrlSetState($buttonLaunch,$GUI_DISABLE)
+	GUICtrlSetState($buttonRefresh,$GUI_DISABLE)
+	GUICtrlSetState($buttonRemove,$GUI_DISABLE)
+EndFunc
+Func EnableButtons()
+	GUICtrlSetState($buttonAdd,$GUI_ENABLE)
+	GUICtrlSetState($buttonLaunch,$GUI_ENABLE)
+	GUICtrlSetState($buttonRefresh,$GUI_ENABLE)
+	GUICtrlSetState($buttonRemove,$GUI_ENABLE)
+EndFunc
 
 Func CheckVersion()
 	$source = BinaryToString(InetRead("https://raw.githubusercontent.com/Sunblood/D2RML/main/D2RML.au3", 1))
@@ -182,13 +215,16 @@ Func Setup($name = "")
 	WinClose($bnetClientClass)
 	WinClose($bnetLauncherClass)
 
-	ToolTip("Creating Tokens: " & $name & @CRLF & "Log into the Launcher with the desired account and press PLAY", 0, 0)
+	UpdateStatus("Log into the Launcher with the desired account and press PLAY")
+;~ 	ToolTip("Creating Tokens: " & $name & @CRLF & "Log into the Launcher with the desired account and press PLAY", 0, 0)
 	LaunchLauncher()
 
 	ProcessWait("D2R.exe")
-	ToolTip("Creating Tokens: " & $name & @CRLF & "Generating token 1 of 2...", 0, 0)
+	UpdateStatus("Creating Tokens: " & $name & @CRLF & "Generating token 1 of 2...")
+;~ 	ToolTip("Creating Tokens: " & $name & @CRLF & "Generating token 1 of 2...", 0, 0)
 	WaitForNewKey()
-	ToolTip("Creating Tokens: " & $name & @CRLF & "Generating token 2 of 2...", 0, 0)
+	UpdateStatus("Creating Tokens: " & $name & @CRLF & "Generating token 2 of 2...")
+;~ 	ToolTip("Creating Tokens: " & $name & @CRLF & "Generating token 2 of 2...", 0, 0)
 	WaitForNewKey()
 	;Key changes twice - second key is what we want
 
@@ -200,24 +236,32 @@ Func Setup($name = "")
 	ToolTip("")
 	LoadAccounts()
 	If GUICtrlRead($checkboxChangeTitle) = $GUI_CHECKED Then
-		WinSetTitle(GetGameWindowHandle("D2R.exe"), "", "D2R:" & $name)
+		WinSetTitle(GetGameWindowHandle(ProcessExists("D2R.exe")), "", "D2R:" & $name)
 	EndIf
+	CloseMultiProcessHandle(ProcessExists("D2R.exe"))
 	MsgBox(262144 + 64, "Finished", "Successfully saved token: " & $name)
 EndFunc   ;==>Setup
 
 Func LaunchWithAccount($name)
-	ToolTip("Launching token: " & $name, 0, 0)
+	If Not FileExists($name&".bin") Then
+		MsgBox(262144 + 16,"Error","Unable to find saved token "&$name&".bin")
+		Return
+	EndIf
+	UpdateStatus("Launching token: "&$name)
+;~ 	ToolTip("Launching token: " & $name, 0, 0)
 	WriteRegKey($name & ".bin")
 	$curKey = RegRead($accountRegKey[0], $accountRegKey[1])
 	$gamePID = LaunchGame()
 
-	ToolTip("Launching token: " & $name & @CRLF & "Refreshing token 1 of 2...", 0, 0)
+	UpdateStatus("Refreshing token 1 of 2")
+;~ 	ToolTip("Launching token: " & $name & @CRLF & "Refreshing token 1 of 2...", 0, 0)
 	If WaitForNewKey() = 0 Then
 		MsgBox(262144 + 16, "Error", "Error obtaining new tokens. Game process closed.")
 		ToolTip("")
 		Return
 	EndIf
-	ToolTip("Launching token: " & $name & @CRLF & "Refreshing token 2 of 2...", 0, 0)
+	UpdateStatus("Refreshing token 2 of 2")
+;~ 	ToolTip("Launching token: " & $name & @CRLF & "Refreshing token 2 of 2...", 0, 0)
 	If WaitForNewKey() = 0 Then
 		MsgBox(262144 + 16, "Error", "Error obtaining new tokens. Game process closed.")
 		ToolTip("")
@@ -311,15 +355,17 @@ EndFunc   ;==>WaitForNewKey
 Func LaunchGame()
 	$path = RegRead($gameInstallRegKey[0], $gameInstallRegKey[1])
 	If GUICtrlRead($checkboxArgs) = $GUI_CHECKED Then
-		Return ShellExecute($path & "\D2R.exe", GUICtrlRead($inputArgs))
+		Return ShellExecute($path&"\D2R.exe",GUICtrlRead($inputArgs))
+;~ 		Return _RunWithReducedPrivileges($path&"\D2R.exe",GUICtrlRead($inputArgs),$path)
 	Else
-		Return ShellExecute($path & "\D2R.exe")
+		Return _RunWithReducedPrivileges($path&"\D2R.exe",$path)
 	EndIf
 EndFunc   ;==>LaunchGame
 Func LaunchLauncher() ;hehe
 	Local $bnpath = RegRead($bnetInstallRegKey[0], $bnetInstallRegKey[1])
 	Local $gamepath = RegRead($gameInstallRegKey[0], $gameInstallRegKey[1])
 	Return ShellExecute($bnpath & "\Battle.net.exe", '--game=osi "--gamepath=' & $gamepath & '"')
+	;~ 	Return _RunWithReducedPrivileges($bnpath&"\Battle.net.exe",'--game=osi "--gamepath='&$gamepath&'"')
 EndFunc   ;==>LaunchLauncher
 Func GetGameWindowHandle($pid)
 	$p = _ProcessGetWindow($pid)
@@ -336,18 +382,24 @@ Func SaveSettings()
 	IniWrite($settingsFile, "Main", "args", GUICtrlRead($inputArgs))
 	IniWrite($settingsFile, "Main", "skipIntro", GUICtrlRead($checkboxSkipIntro))
 	IniWrite($settingsFile, "Main", "changeTitle", GUICtrlRead($checkboxChangeTitle))
+	IniWrite($settingsFile,"Main","minimizeToTray",GUICtrlRead($checkboxMinimizeToTray))
 EndFunc   ;==>SaveSettings
 Func LoadSettings()
 	GUICtrlSetState($checkboxArgs, IniRead($settingsFile, "Main", "argsEnabled", 4))
 	GUICtrlSetData($inputArgs, IniRead($settingsFile, "Main", "args", ""))
 	GUICtrlSetState($checkboxSkipIntro, IniRead($settingsFile, "Main", "skipIntro", 4))
 	GUICtrlSetState($checkboxChangeTitle, IniRead($settingsFile, "Main", "changeTitle", 4))
+	GUICtrlSetState($checkboxMinimizeToTray, IniRead($settingsFile, "Main", "minimizeToTray", 4))
 EndFunc   ;==>LoadSettings
 
 Func GetFilename($file)
 	Local $a = StringSplit($file, "\")
 	Return $a[$a[0]]
 EndFunc   ;==>GetFilename
+
+Func UpdateStatus($text)
+	_GUICtrlStatusBar_SetText($StatusBar1,$text)
+EndFunc
 
 Func WriteLog($text)
 	If Not @Compiled Then

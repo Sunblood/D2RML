@@ -197,7 +197,14 @@ EndFunc
 
 Func Setup($name = "")
 	If ProcessExists("D2R.exe") Or ProcessExists("Battle.net.exe") Or ProcessExists("Diablo II Resurrected Launcher.exe") Then
-		If MsgBox(262144 + 5 + 16, "Error", "D2R and Battle.net launcher(s) must be closed.") = 4 Then ;retry
+		$userInput = MsgBox(262144 + 2 + 16, "Error", "D2R and Battle.net launcher(s) must be closed.")
+		If $userInput = 4 Then ;retry
+			Setup($name)
+			Return
+		ElseIf $userInput = 5 Then ;ignore
+			ProcessClose("D2R.exe")
+			ProcessClose("Battle.net.exe")
+			ProcessClose("Diablo II Resurrected Launcher.exe")
 			Setup($name)
 			Return
 		Else

@@ -4,7 +4,7 @@ Allows you to launch and connect with multiple instances of Diablo 2 Resurrected
 
 # D2RML IS FREE SOFTWARE. IF YOU PAID FOR THIS SOFTWARE, YOU HAVE BEEN SCAMMED.
 
-Requires handle64.exe from https://docs.microsoft.com/en-us/sysinternals/downloads/handle (included with the compiled exe)
+Requires handle64.exe from https://docs.microsoft.com/en-us/sysinternals/downloads/handle
 
 ### Discord: https://discord.gg/PwGR2rRafX
 

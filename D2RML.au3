@@ -33,7 +33,7 @@ _Singleton("D2RML")
 
 FileInstall("handle64.exe", "handle64.exe", 0)
 If Not FileExists("handle64.exe") Then
-	MsgBox(262144 + 16, "Error", "Error: Unable to locate handle64.exe. Download it from Github and place it in the same folder as D2RML.")
+	MsgBox(262144 + 16, "Error", "Error: Unable to locate handle64.exe. Check Github for instructions to download it, and place it in the same folder as D2RML.")
 	Exit
 EndIf
 If @Compiled Then

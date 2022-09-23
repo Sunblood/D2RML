@@ -1,3 +1,5 @@
+# No longer working as of the 2.5 patch. #
+
 # Diablo 2 Resurrected Multi-Launcher by Sunblood
 
 Allows you to launch and connect with multiple instances of Diablo 2 Resurrected using pre-generated login tokens.

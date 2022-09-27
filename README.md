@@ -1,16 +1,14 @@
-# No longer working as of the 2.5 patch. #
+# This version is no longer working after the D2R 2.5 patch. Join Discord for more info on the latest version: https://discord.gg/PwGR2rRafX #
 
 # Diablo 2 Resurrected Multi-Launcher by Sunblood
 
 Allows you to launch and connect with multiple instances of Diablo 2 Resurrected using pre-generated login tokens.
 
-# D2RML IS FREE SOFTWARE. IF YOU PAID FOR THIS SOFTWARE, YOU HAVE BEEN SCAMMED.
-
 Requires handle64.exe from https://docs.microsoft.com/en-us/sysinternals/downloads/handle (included with the compiled exe)
 
 ### Discord: https://discord.gg/PwGR2rRafX
 
-### BTC Donations: 3FLeQd9zt7H6zqG839apK5MxkVJvfNYxer
+### BTC Donations: 
 
 ![2021-10-21 21_24_16-Window](https://user-images.githubusercontent.com/6067956/138388188-6e7b3dec-b07a-4036-99a5-b180348a4b75.png)
 
